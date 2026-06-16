@@ -4,6 +4,9 @@ A fullstack web application for a fictional digital agency: marketing site with 
 
 Built for the VickyBytes Fullstack Developer Assignment.
 
+**Live deployment:** https://nova-studio-navy.vercel.app
+**Admin panel:** https://nova-studio-navy.vercel.app/admin/login (`admin` / `NovaAdmin#2026`)
+
 ## Tech Stack
 
 | Layer | Technology |
