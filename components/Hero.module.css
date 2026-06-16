@@ -1,0 +1,47 @@
+.hero {
+  background: radial-gradient(ellipse at 20% 50%, rgba(217, 119, 6, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(146, 64, 14, 0.06) 0%, transparent 45%),
+    #fffbeb;
+}
+
+.heroContent {
+  animation: fadeInUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.headline {
+  animation: fadeInUp 0.9s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.subheadline {
+  animation: fadeInUp 0.9s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ctaBtn {
+  animation: fadeInUp 0.9s 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.scrollHint {
+  animation: fadeIn 1s 1s ease both;
+}
+
+.bgOrb1 {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.07) 0%, transparent 70%);
+  top: -250px;
+  right: -200px;
+  pointer-events: none;
+}
+
+.bgOrb2 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(146, 64, 14, 0.06) 0%, transparent 70%);
+  bottom: 0;
+  left: -100px;
+  pointer-events: none;
+}
