@@ -43,7 +43,7 @@ One thing to watch: Next.js strips bare `$` signs from double-quoted `.env` valu
 
 `NEXT_PUBLIC_BASE_URL` should be `http://localhost:3000` for local dev and your live domain (e.g. `https://nova-studio-navy.vercel.app`) when deployed.
 
-MongoDB is not required — analytics tracking (`/api/analytics`) is an optional bonus feature. If you have a MongoDB instance, add `MONGODB_URI="mongodb+srv://..."`. Without it the analytics endpoint will throw but the rest of the app works fine.
+MongoDB is not required -- analytics tracking (`/api/analytics`) is an optional bonus feature. If you have a MongoDB instance, add `MONGODB_URI="mongodb+srv://..."`. Without it the analytics endpoint will throw but the rest of the app works fine.
 
 ```bash
 npm run db:generate   # generate Prisma client
@@ -139,12 +139,12 @@ MongoDB holds an `events` collection (`type`, `page`, `userAgent`, `timestamp`) 
 
 ## Design decisions
 
-**Two databases** — Postgres for anything with relationships or delete operations (projects, contacts, stats). MongoDB for analytics events which are write-heavy, never updated, and don't need joins.
+**Two databases** -- Postgres for anything with relationships or delete operations (projects, contacts, stats). MongoDB for analytics events which are write-heavy, never updated, and don't need joins.
 
-**JWT, not sessions** — stateless, works well with Next.js Edge middleware since verifying a token doesn't require a DB call on every request.
+**JWT, not sessions** -- stateless, works well with Next.js Edge middleware since verifying a token doesn't require a DB call on every request.
 
-**Middleware-level auth** — `middleware.ts` runs on the Edge and rejects requests before they reach the route handler. This means no route handler can accidentally forget to check auth.
+**Middleware-level auth** -- `middleware.ts` runs on the Edge and rejects requests before they reach the route handler. This means no route handler can accidentally forget to check auth.
 
-**Validation on both sides** — the contact form validates client-side so users get instant feedback. Server validates again because frontend validation is trivial to bypass.
+**Validation on both sides** -- the contact form validates client-side so users get instant feedback. Server validates again because frontend validation is trivial to bypass.
 
-**CSS Modules for animations** — the scroll-triggered reveals use IntersectionObserver + CSS transitions in plain `.module.css` files. This is cleaner than trying to do `opacity: 0 → 1` transitions through MUI's `sx` prop which doesn't handle class-based state as naturally.
+**CSS Modules for animations** -- the scroll-triggered reveals use IntersectionObserver + CSS transitions in plain `.module.css` files. This is cleaner than trying to do `opacity: 0 → 1` transitions through MUI's `sx` prop which doesn't handle class-based state as naturally.
