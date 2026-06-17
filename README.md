@@ -28,10 +28,9 @@ Create `.env.local` in the root:
 
 ```
 DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/nova_studio"
-JWT_SECRET="any-long-random-string"
+JWT_SECRET="any-long-random-string-at-least-32-chars"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD_HASH="$2b$10$..."
-MONGODB_URI=""
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
 
@@ -41,6 +40,10 @@ node -e "console.log(require('bcryptjs').hashSync('yourpassword', 10))"
 ```
 
 One thing to watch: Next.js strips bare `$` signs from double-quoted `.env` values. Escape them as `\$` in `ADMIN_PASSWORD_HASH`, otherwise the hash loads as an empty string and login always fails.
+
+`NEXT_PUBLIC_BASE_URL` should be `http://localhost:3000` for local dev and your live domain (e.g. `https://nova-studio-navy.vercel.app`) when deployed.
+
+MongoDB is not required — analytics tracking (`/api/analytics`) is an optional bonus feature. If you have a MongoDB instance, add `MONGODB_URI="mongodb+srv://..."`. Without it the analytics endpoint will throw but the rest of the app works fine.
 
 ```bash
 npm run db:generate   # generate Prisma client
