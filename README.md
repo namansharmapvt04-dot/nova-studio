@@ -1,125 +1,112 @@
-# Nova Studio — Digital Agency Platform
+# Nova Studio
 
-A fullstack web application for a fictional digital agency: marketing site with services, portfolio, stats and contact form, backed by a real API/database layer, plus a protected admin panel for managing submissions and projects.
+Fullstack digital agency platform built for the VickyBytes assignment.
 
-Built for the VickyBytes Fullstack Developer Assignment.
+**Live:** https://nova-studio-navy.vercel.app
+**Admin:** https://nova-studio-navy.vercel.app/admin/login
 
-**Live deployment:** https://nova-studio-navy.vercel.app
-**Admin panel:** https://nova-studio-navy.vercel.app/admin/login (`admin` / `NovaAdmin#2026`)
+## Stack
 
-## Tech Stack
-
-| Layer | Technology |
+| Layer | Tech |
 |---|---|
-| Frontend | Next.js 14 (App Router), TypeScript |
-| UI / Styling | Material UI (MUI v5) + CSS Modules |
+| Frontend | Next.js 14 App Router + TypeScript |
+| UI | Material UI v5 + CSS Modules |
 | Backend | Next.js API Routes |
-| Primary database | PostgreSQL via Prisma ORM |
-| Secondary database | MongoDB (analytics events) |
-| Auth | JWT (`jsonwebtoken` on the server, `jose` in Edge middleware) + bcrypt password hashing |
+| Database (primary) | PostgreSQL + Prisma ORM |
+| Database (analytics) | MongoDB |
+| Auth | JWT (jsonwebtoken + jose Edge middleware) + bcrypt |
 
-## Features
+## Local setup
 
-- **Landing page** — animated hero, services, portfolio, stats, contact form, all rendered from real API data (not hardcoded).
-- **Services section** — three services (Web Design, Development, Branding) rendered as a numbered, hover-responsive list.
-- **Portfolio section** — projects fetched from `/api/projects`, scroll-triggered reveal animation, hover effects, category filtering.
-- **Stats section** — metrics fetched from `/api/stats`, animated count-up on scroll into view.
-- **Contact form** — client-side validation, posts to `/api/contact`, success/error feedback via snackbar.
-- **Admin panel** (`/admin`) — JWT-protected. View all contact submissions, add/delete portfolio projects.
-- **Analytics (bonus)** — CTA clicks and page views logged to MongoDB via `/api/analytics`.
+**Requirements:** Node.js 18+, PostgreSQL
 
-## Project Structure
-
-```
-nova-studio/
-├── app/
-│   ├── api/
-│   │   ├── projects/          GET, POST  (+ /[id] for DELETE)
-│   │   ├── stats/             GET
-│   │   ├── contact/           POST
-│   │   ├── contacts/          GET (admin)
-│   │   ├── auth/login/        POST (admin login)
-│   │   └── analytics/         POST (event logging)
-│   ├── admin/                 Login + dashboard (Contacts / Projects tabs)
-│   ├── page.tsx                Landing page
-│   ├── layout.tsx
-│   └── theme.ts                 MUI theme
-├── components/                  Navbar, Hero, ServicesSection, PortfolioSection,
-│                                 StatsSection, ContactForm, admin/*
-├── hooks/                       useScrollAnimation, useCountUp
-├── lib/                          prisma client, mongodb client, auth helpers
-├── prisma/                       schema.prisma, seed.ts
-└── middleware.ts                 Edge JWT verification for protected API routes
-```
-
-## Setup Instructions
-
-### 1. Prerequisites
-- Node.js 18+
-- PostgreSQL running locally (or a hosted instance)
-- (Optional) MongoDB instance for analytics — the app runs fine without it
-
-### 2. Install dependencies
 ```bash
 npm install
 ```
 
-### 3. Configure environment variables
+Create `.env.local` in the root:
 
-Create `.env.local` in the project root:
-
-```env
-DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/nova_studio"
-MONGODB_URI=""                     # optional — leave empty to skip analytics
-JWT_SECRET="replace-with-a-long-random-string"
+```
+DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/nova_studio"
+JWT_SECRET="any-long-random-string"
 ADMIN_USERNAME="admin"
-ADMIN_PASSWORD_HASH="$2b$10$..."   # bcrypt hash of your admin password
+ADMIN_PASSWORD_HASH="$2b$10$..."
+MONGODB_URI=""
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
 
-Generate a password hash:
+To generate the password hash:
 ```bash
-node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
+node -e "console.log(require('bcryptjs').hashSync('yourpassword', 10))"
 ```
 
-> Note: dollar signs in `ADMIN_PASSWORD_HASH` must be escaped as `\$` when the value is wrapped in double quotes, otherwise Next.js's `.env` parser drops them.
+One thing to watch: Next.js strips bare `$` signs from double-quoted `.env` values. Escape them as `\$` in `ADMIN_PASSWORD_HASH`, otherwise the hash loads as an empty string and login always fails.
 
-### 4. Set up the database
 ```bash
 npm run db:generate   # generate Prisma client
-npm run db:migrate     # create tables
-npm run db:seed        # seed projects + stats
+npm run db:migrate    # run migrations
+npm run db:seed       # seed 6 projects + 3 stats
+npm run dev           # http://localhost:3000
 ```
 
-### 5. Run the app
+Admin panel is at `/admin/login`.
+
+## Scripts
+
 ```bash
-npm run dev
-```
-App runs at `http://localhost:3000`. Admin panel at `http://localhost:3000/admin/login`.
-
-### Other scripts
-```bash
-npm run build       # production build
-npm run start        # run production build
-npm run db:studio    # Prisma Studio GUI for the database
+npm run dev          # dev server
+npm run build        # production build
+npm run start        # serve production build
+npm run db:studio    # Prisma Studio (visual DB browser)
 ```
 
-## API Documentation
+## API
 
-| Method | Endpoint | Auth | Description |
+| Method | Route | Auth | Body |
 |---|---|---|---|
-| GET | `/api/projects` | Public | Fetch all portfolio projects |
-| POST | `/api/projects` | Admin (JWT) | Add a new project — `{ title, category, imageUrl }` |
-| DELETE | `/api/projects/:id` | Admin (JWT) | Delete a project by ID |
-| GET | `/api/stats` | Public | Fetch the three headline metrics |
-| POST | `/api/contact` | Public | Submit a contact form entry — `{ name, email, message }` |
-| GET | `/api/contacts` | Admin (JWT) | View all contact submissions |
-| POST | `/api/auth/login` | Public | Admin login — `{ username, password }` → returns JWT |
-| POST | `/api/analytics` | Public | Log a `page_view` or `cta_click` event to MongoDB |
+| GET | /api/projects | public | |
+| POST | /api/projects | admin | `{ title, category, imageUrl }` |
+| DELETE | /api/projects/:id | admin | |
+| GET | /api/stats | public | |
+| POST | /api/contact | public | `{ name, email, message }` |
+| GET | /api/contacts | admin | |
+| POST | /api/auth/login | public | `{ username, password }` |
+| POST | /api/analytics | public | `{ type: "page_view" \| "cta_click", page }` |
 
-Admin-only routes are enforced at the **middleware** level (`middleware.ts`), not just inside the route handler — requests without a valid `Authorization: Bearer <token>` header are rejected with `401` before they reach the handler.
+Admin routes require `Authorization: Bearer <token>`. Auth is enforced in `middleware.ts` at the Edge before requests hit any handler, so unauthenticated requests are rejected with 401 before Prisma is ever called.
 
-## Database Schema (PostgreSQL / Prisma)
+## Project structure
+
+```
+app/
+  api/
+    auth/login/       POST - returns JWT
+    projects/         GET (public), POST (admin)
+    projects/[id]/    DELETE (admin)
+    stats/            GET
+    contact/          POST
+    contacts/         GET (admin)
+    analytics/        POST
+  admin/              login page + dashboard
+  page.tsx            landing page
+  layout.tsx
+  theme.ts
+components/
+  Navbar, Hero, ServicesSection, PortfolioSection
+  StatsSection, ContactForm
+  admin/ ContactsTable, ProjectsManager
+hooks/
+  useScrollAnimation.ts
+  useCountUp.ts
+lib/
+  prisma.ts, mongodb.ts, auth.ts
+middleware.ts
+prisma/
+  schema.prisma
+  seed.ts
+```
+
+## Database schema
 
 ```prisma
 model Project {
@@ -145,18 +132,16 @@ model Stat {
 }
 ```
 
-MongoDB stores a single `events` collection for analytics (`type`, `page`, `userAgent`, `timestamp`) — kept separate from Postgres since it's unstructured, high-volume, append-only data.
+MongoDB holds an `events` collection (`type`, `page`, `userAgent`, `timestamp`) for analytics. Kept separate from Postgres because it's append-only and schema-free.
 
-## Design Decisions
+## Design decisions
 
-- **Postgres for structured data, Mongo for events** — projects, contacts and stats have a fixed shape and relational guarantees matter (e.g. admin deletes); analytics events are write-heavy, schema-light, and disposable, so they don't belong in the same store.
-- **JWT over sessions** — stateless auth keeps the admin API routes simple and works cleanly with Next.js Edge middleware, which can verify a token without touching the database on every request.
-- **Edge middleware for route protection, not just handler checks** — so an unauthenticated request never reaches Prisma/Mongo at all, rather than relying on every handler remembering to check auth.
-- **Validation on both ends** — the contact form and project forms validate client-side for UX (instant feedback) and re-validate server-side because client validation is not security.
-- **CSS Modules + MUI's `sx` prop** — MUI handles components and theming consistently; CSS Modules handle the scroll-triggered animation classes (`IntersectionObserver`-driven), since that's simpler to express in plain CSS transitions than via `sx`.
-- **No UI component library beyond MUI** — kept the dependency surface small per the assignment's "avoid unnecessary dependencies" guidance.
+**Two databases** — Postgres for anything with relationships or delete operations (projects, contacts, stats). MongoDB for analytics events which are write-heavy, never updated, and don't need joins.
 
-## Known Limitations
+**JWT, not sessions** — stateless, works well with Next.js Edge middleware since verifying a token doesn't require a DB call on every request.
 
-- MongoDB analytics is optional — if `MONGODB_URI` is unset, `/api/analytics` calls are skipped client-side rather than failing.
-- No pagination on `/api/contacts` or `/api/projects` — acceptable at current scale, would need cursor-based pagination for production volume.
+**Middleware-level auth** — `middleware.ts` runs on the Edge and rejects requests before they reach the route handler. This means no route handler can accidentally forget to check auth.
+
+**Validation on both sides** — the contact form validates client-side so users get instant feedback. Server validates again because frontend validation is trivial to bypass.
+
+**CSS Modules for animations** — the scroll-triggered reveals use IntersectionObserver + CSS transitions in plain `.module.css` files. This is cleaner than trying to do `opacity: 0 → 1` transitions through MUI's `sx` prop which doesn't handle class-based state as naturally.
